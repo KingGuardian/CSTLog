@@ -1,5 +1,4 @@
-
-import 'dart:async';
+export 'package:cstlog/src/core/log.dart';
 
 import 'package:flutter/services.dart';
 

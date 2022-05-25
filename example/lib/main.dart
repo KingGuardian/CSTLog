@@ -4,6 +4,10 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:cstlog/cstlog.dart';
 
+import 'log_list.dart';
+
+CLog logInstance = CLog.init();
+
 void main() {
   runApp(const MyApp());
 }
@@ -16,47 +20,77 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await Cstlog.platformVersion ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
+      routes: {
+        "Home": (BuildContext context) => const HomePage(),
+        "LogList": (BuildContext context) => const LogListPage(),
+      },
+      initialRoute: "Home",
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  TextEditingController? titleController;
+  TextEditingController? contentController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    titleController = TextEditingController(text: "日志标题");
+    contentController = TextEditingController(text: "日志内容");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
       ),
+      body:buildBody(),
+    );
+  }
+
+  Widget buildBody() {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.all(15),
+          child: TextField(controller: titleController,),
+        ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+          child: TextField(controller: contentController,),
+        ),
+        ElevatedButton(onPressed: () {
+          String title = titleController?.text ?? "";
+          String content = contentController?.text ?? "";
+          if (title.isNotEmpty && content.isNotEmpty) {
+            //添加日志
+            logInstance.logToFile(title, content);
+          }
+        }, child: const Text("添加日志")),
+        ElevatedButton(onPressed: () {
+          Navigator.of(context).pushNamed("LogList");
+        }, child: const Text("查看日志")),
+      ],
     );
   }
 }
