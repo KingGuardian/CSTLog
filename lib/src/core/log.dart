@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:cstlog/src/core/config.dart';
 import 'package:cstlog/src/loader/loader.dart';
+import 'package:cstlog/src/model/log_file_info.dart';
 import 'package:cstlog/src/model/log_info.dart';
 import 'package:cstlog/src/printer/printer.dart';
 import 'package:cstlog/src/utils/default_factory.dart';
@@ -21,7 +20,7 @@ class CLog {
     _printer.print(LogInfo(name, content));
   }
 
-  Future<List<FileSystemEntity>> loadLogs() {
+  Future<List<LogFileInfo>> loadLogs() {
     return _logLoader.loadLogs();
   }
 

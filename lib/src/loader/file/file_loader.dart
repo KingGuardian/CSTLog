@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cstlog/src/core/config.dart';
 import 'package:cstlog/src/loader/file/file_loader_config.dart';
 import 'package:cstlog/src/loader/loader.dart';
+import 'package:cstlog/src/model/log_file_info.dart';
 import 'package:cstlog/src/utils/file_utils.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -12,7 +13,7 @@ class FileLogLoader implements LogLoader {
   FileLogLoader(this._loaderConfig);
 
   @override
-  Future<List<FileSystemEntity>> loadLogs() async {
+  Future<List<LogFileInfo>> loadLogs() async {
     Directory? logDir = await getLogStoragePath();
     if (logDir == null) {
       return [];

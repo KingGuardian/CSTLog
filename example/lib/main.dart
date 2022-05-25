@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:cstlog/cstlog.dart';
+import 'package:cstlog_example/log_content.dart';
+import 'package:flutter/material.dart';
 
 import 'log_list.dart';
 
@@ -20,7 +18,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     super.initState();
@@ -32,6 +29,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         "Home": (BuildContext context) => const HomePage(),
         "LogList": (BuildContext context) => const LogListPage(),
+        "LogContent": (BuildContext context) => const LogContentPage(),
       },
       initialRoute: "Home",
     );
@@ -46,7 +44,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   TextEditingController? titleController;
   TextEditingController? contentController;
 
@@ -64,7 +61,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body:buildBody(),
+      body: buildBody(),
     );
   }
 
@@ -73,23 +70,31 @@ class _HomePageState extends State<HomePage> {
       children: [
         Container(
           margin: const EdgeInsets.all(15),
-          child: TextField(controller: titleController,),
+          child: TextField(
+            controller: titleController,
+          ),
         ),
         Container(
           margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-          child: TextField(controller: contentController,),
+          child: TextField(
+            controller: contentController,
+          ),
         ),
-        ElevatedButton(onPressed: () {
-          String title = titleController?.text ?? "";
-          String content = contentController?.text ?? "";
-          if (title.isNotEmpty && content.isNotEmpty) {
-            //添加日志
-            logInstance.logToFile(title, content);
-          }
-        }, child: const Text("添加日志")),
-        ElevatedButton(onPressed: () {
-          Navigator.of(context).pushNamed("LogList");
-        }, child: const Text("查看日志")),
+        ElevatedButton(
+            onPressed: () {
+              String title = titleController?.text ?? "";
+              String content = contentController?.text ?? "";
+              if (title.isNotEmpty && content.isNotEmpty) {
+                //添加日志
+                logInstance.logToFile(title, content);
+              }
+            },
+            child: const Text("添加日志")),
+        ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed("LogList");
+            },
+            child: const Text("查看日志")),
       ],
     );
   }

@@ -1,4 +1,5 @@
 export 'package:cstlog/src/core/log.dart';
+export 'package:cstlog/src/model/log_file_info.dart';
 
 import 'package:flutter/services.dart';
 
