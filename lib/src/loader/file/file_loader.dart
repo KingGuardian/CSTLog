@@ -13,16 +13,40 @@ class FileLogLoader implements LogLoader {
   FileLogLoader(this._loaderConfig);
 
   @override
-  Future<List<LogFileInfo>> loadLogs() async {
-    Directory? logDir = await getLogStoragePath();
-    if (logDir == null) {
+  Future<List<LogFileInfo>> loadRecords() async {
+    String? recordPath = await _getRecordStoragePath();
+    if (recordPath == null) {
       return [];
     }
-    String logPath = logDir.path + Platform.pathSeparator + _loaderConfig.folderName;
+    return FileUtil.instantce.getAllSubFile(recordPath);
+  }
+
+  @override
+  Future<List<LogFileInfo>> loadLogs() async {
+    String? logPath = await _getLogStoragePath();
+    if (logPath == null) {
+      return [];
+    }
     return FileUtil.instantce.getAllSubFile(logPath);
   }
 
-  Future<Directory?> getLogStoragePath() async {
+  Future<String?> _getLogStoragePath() async {
+    return _getTargetStoragePath(_loaderConfig.logFolderName);
+  }
+
+  Future<String?> _getRecordStoragePath() async {
+    return _getTargetStoragePath(_loaderConfig.recordFolderName);
+  }
+
+  Future<String?> _getTargetStoragePath(String folderName) async {
+    Directory? storageDirectory = await _getDeviceStoragePath();
+    String? path = storageDirectory != null
+        ? storageDirectory.path + Platform.pathSeparator + folderName
+        : null;
+    return path;
+  }
+
+  Future<Directory?> _getDeviceStoragePath() async {
     Directory? storageDirectory;
     switch (_loaderConfig.storageType) {
       case LogStorageType.applicationSupport:

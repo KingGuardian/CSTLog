@@ -2,20 +2,28 @@ import 'package:cstlog/src/constant/constant.dart';
 import 'package:cstlog/src/core/config.dart';
 
 class FileLoaderConfig {
-  final String folderName;
+  final String logFolderName;
+  final String recordFolderName;
   final LogStorageType storageType;
 
   FileLoaderConfig(FileLoaderConfigBuilder builder)
-      : folderName = builder.folderName,
+      : logFolderName = builder.logFolderName,
+        recordFolderName = builder.recordFolderName,
         storageType = builder.storageType;
 }
 
 class FileLoaderConfigBuilder {
-  String folderName = cstFolderName;
+  String logFolderName = additelLogFolderName;
+  String recordFolderName = additelRecordFolderName;
   LogStorageType storageType = LogStorageType.applicationDoucument;
 
-  FileLoaderConfigBuilder logFolderName(String name) {
-    folderName = name;
+  FileLoaderConfigBuilder withLogFolderName(String name) {
+    logFolderName = name;
+    return this;
+  }
+
+  FileLoaderConfigBuilder withRecordFolderName(String name) {
+    recordFolderName = name;
     return this;
   }
 

@@ -10,12 +10,23 @@ class DefaultFactory {
   }
 
   static FilePrinter buildDefaultPrinter(LogConfig? logConfig) {
-    FilePrinterConfig config = FilePrinterConfigBuilder().build();
+    logConfig ??= DefaultFactory.buildDefaultLogConfig();
+    FilePrinterConfig config = FilePrinterConfigBuilder()
+        .withLogFolderName(logConfig.logFolderName)
+        .withRecordFolderName(logConfig.recordFolderName)
+        .logStorageType(logConfig.logStorageType)
+        .build();
+
     return FilePrinter(config);
   }
 
   static FileLogLoader buildDefaultLogLoader(LogConfig? logConfig) {
-    FileLoaderConfig config = FileLoaderConfigBuilder().build();
+    logConfig ??= DefaultFactory.buildDefaultLogConfig();
+    FileLoaderConfig config = FileLoaderConfigBuilder()
+        .withLogFolderName(logConfig.logFolderName)
+        .withRecordFolderName(logConfig.recordFolderName)
+        .logStorageType(logConfig.logStorageType)
+        .build();
     return FileLogLoader(config);
   }
 }

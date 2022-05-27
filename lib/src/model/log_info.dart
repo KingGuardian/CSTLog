@@ -1,6 +1,6 @@
-class LogInfo {
+class RecordInfo {
   final String name;
   final String content;
 
-  LogInfo(this.name, this.content);
+  RecordInfo(this.name, this.content);
 }

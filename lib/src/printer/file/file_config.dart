@@ -1,30 +1,47 @@
 import 'package:cstlog/src/constant/constant.dart';
 import 'package:cstlog/src/core/config.dart';
 import 'package:cstlog/src/printer/file/name_strategy.dart';
+import 'package:cstlog/src/printer/file/split_strategy.dart';
 
 class FilePrinterConfig {
-  final String folderName;
+  final String logFolderName;
+  final String recordFolderName;
   final FileNameStrategy fileNameStrategy;
+  final FileSplitStrategy fileSplitStrategy;
   final LogStorageType storageType;
 
   FilePrinterConfig(FilePrinterConfigBuilder builder)
-      : folderName = builder.folderName,
+      : logFolderName = builder.logFolderName,
+        recordFolderName = builder.recordFolderName,
         fileNameStrategy = builder.fileNameStrategy,
+        fileSplitStrategy = builder.fileSplitStrategy,
         storageType = builder.storageType;
 }
 
 class FilePrinterConfigBuilder {
-  String folderName = cstFolderName;
+  String logFolderName = additelLogFolderName;
+  String recordFolderName = additelRecordFolderName;
   FileNameStrategy fileNameStrategy = DefaultFileNameStrategy();
-  LogStorageType storageType = LogStorageType.applicationDoucument;
+  FileSplitStrategy fileSplitStrategy = FixedSizeStrategy(maxFileSize);
+  LogStorageType storageType = LogStorageType.externalStorage;
 
-  FilePrinterConfigBuilder logFolderName(String name) {
-    folderName = name;
+  FilePrinterConfigBuilder withLogFolderName(String name) {
+    logFolderName = name;
+    return this;
+  }
+
+  FilePrinterConfigBuilder withRecordFolderName(String name) {
+    recordFolderName = name;
     return this;
   }
 
   FilePrinterConfigBuilder nameStrategy(FileNameStrategy nameStrategy) {
     fileNameStrategy = nameStrategy;
+    return this;
+  }
+
+  FilePrinterConfigBuilder splitStrategy(FileSplitStrategy spliteStrategy) {
+    fileSplitStrategy = spliteStrategy;
     return this;
   }
 
