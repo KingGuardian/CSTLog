@@ -1,8 +1,15 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
+import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:cstlog/cstlog.dart';
+import 'package:cstlog_example/log_content.dart';
+import 'package:cstlog_example/record_list.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'log_list.dart';
+
+Logger logInstance = Logger.init();
 
 void main() {
   runApp(const MyApp());
@@ -16,47 +23,154 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await Cstlog.platformVersion ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
-      ),
+      routes: {
+        "Home": (BuildContext context) => const HomePage(),
+        "LogList": (BuildContext context) => const LogListPage(),
+        "RecordList": (BuildContext context) => const RecordListPage(),
+        "LogContent": (BuildContext context) => const LogContentPage(),
+      },
+      initialRoute: "Home",
     );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  TextEditingController? titleController;
+  TextEditingController? contentController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    titleController = TextEditingController(text: "维修记录标题");
+    contentController = TextEditingController(text: "维修记录内容");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
+      ),
+      body: buildBody(),
+    );
+  }
+
+  Widget buildBody() {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.all(15),
+          child: TextField(
+            controller: titleController,
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+          child: TextField(
+            controller: contentController,
+          ),
+        ),
+        ElevatedButton(
+          child: const Text("添加维修记录"),
+          onPressed: () {
+            String title = titleController?.text ?? "";
+            String content = contentController?.text ?? "";
+            if (title.isNotEmpty && content.isNotEmpty) {
+              //添加日志
+              logInstance.record(title, content);
+            }
+          },
+        ),
+        ElevatedButton(
+          child: const Text("查看维修记录"),
+          onPressed: () {
+            Navigator.of(context).pushNamed("RecordList");
+          },
+        ),
+        ElevatedButton(
+          child: const Text("打印当前堆栈信息"),
+          onPressed: () {
+            _printCurStraceInfo();
+          },
+        ),
+        ElevatedButton(
+          child: const Text("查看开发日志"),
+          onPressed: () {
+            Navigator.of(context).pushNamed("LogList");
+          },
+        ),
+        ElevatedButton(
+          child: const Text("U盘路径"),
+          onPressed: () {
+            _checkExternalPath();
+          },
+        ),
+        ElevatedButton(
+          child: const Text("复制文件"),
+          onPressed: () {
+            _copyFiles();
+          },
+        ),
+        ElevatedButton(
+          child: const Text("申请权限"),
+          onPressed: () {
+            _requestStoragePersmission();
+          },
+        ),
+      ],
+    );
+  }
+
+  _checkExternalPath() async {
+    String path = "";
+    List<Directory>? dirList = await getExternalStorageDirectories();
+    if (dirList != null && dirList.isNotEmpty) {
+      for (Directory dir in dirList) {
+        path = path + dir.path + "\n";
+      }
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(path)));
+  }
+
+  _copyFiles() async {
+    String path = "";
+    List<Directory>? dirList = await getExternalStorageDirectories();
+    if (dirList != null && dirList.isNotEmpty) {
+      for (Directory dir in dirList) {
+        path = dir.path + Platform.pathSeparator + "Copy";
+        await logInstance.copyToFlashMemoryDiskFromPath(path);
+      }
+    }
+  }
+
+  _printCurStraceInfo() {
+    logInstance.log(Level.error, "打印堆栈信息", "错误原因：人为打印", StackTrace.current);
+  }
+
+  _requestStoragePersmission() async {
+    var status = await Permission.storage.status;
+    if (status.isDenied) {
+      status = await Permission.storage.request();
+      if (status.isGranted) {
+        print("success get permission");
+      }
+      // We didn't ask for permission yet or the permission has been denied before but not permanently.
+    }
   }
 }
