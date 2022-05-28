@@ -138,19 +138,25 @@ class _HomePageState extends State<HomePage> {
   }
 
   _checkExternalPath() async {
+    String path = "";
     List<Directory>? dirList = await getExternalStorageDirectories();
-    Directory documentDir = await getApplicationDocumentsDirectory();
-    Directory? extDir = await getExternalStorageDirectory();
-    if (dirList != null && !dirList.isNotEmpty) {
+    if (dirList != null && dirList.isNotEmpty) {
       for (Directory dir in dirList) {
-        print(dir.path);
+        path = path + dir.path + "\n";
       }
     }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(path)));
   }
 
   _copyFiles() async {
-    String path = '/storage/emulated/0/TestFolder';
-    logInstance.copyToFlashMemoryDiskFromPath(path);
+    String path = "";
+    List<Directory>? dirList = await getExternalStorageDirectories();
+    if (dirList != null && dirList.isNotEmpty) {
+      for (Directory dir in dirList) {
+        path = dir.path + Platform.pathSeparator + "Copy";
+        await logInstance.copyToFlashMemoryDiskFromPath(path);
+      }
+    }
   }
 
   _printCurStraceInfo() {

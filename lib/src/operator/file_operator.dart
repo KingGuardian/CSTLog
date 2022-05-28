@@ -12,32 +12,34 @@ class FileOperator implements Operator {
 
   @override
   Future<bool> copyFilesTo(String path) async {
-
-    Directory director = Directory(path);
-    if (!director.existsSync()) {
-      director.createSync();
-    }
-
     String newLogPath = path + Platform.pathSeparator + additelLogFolderName;
-    director = Directory(newLogPath);
-    if (!director.existsSync()) {
-      director.createSync();
-    }
+    await _createFolderIfNotExist(newLogPath);
 
     String newRecordPath =
         path + Platform.pathSeparator + additelRecordFolderName;
+    await _createFolderIfNotExist(newRecordPath);
+
     List<LogFileInfo> logList = await _loader.loadLogs();
     List<LogFileInfo> recordList = await _loader.loadRecords();
 
     for (LogFileInfo logFileInfo in logList) {
       File file = File.fromUri(logFileInfo.uri);
-      file.copySync(newLogPath + Platform.pathSeparator + logFileInfo.fileName);
+      await file
+          .copy(newLogPath + Platform.pathSeparator + logFileInfo.fileName);
     }
 
     for (LogFileInfo logFileInfo in recordList) {
       File file = File.fromUri(logFileInfo.uri);
-      file.copySync(newRecordPath + Platform.pathSeparator + logFileInfo.fileName);
+      await file
+          .copy(newRecordPath + Platform.pathSeparator + logFileInfo.fileName);
     }
     return true;
+  }
+
+  _createFolderIfNotExist(String path) async {
+    Directory director = Directory(path);
+    if (!director.existsSync()) {
+      await director.create(recursive: true);
+    }
   }
 }
