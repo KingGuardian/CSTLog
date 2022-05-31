@@ -21,11 +21,11 @@ class Logger {
         _printer = DefaultFactory.buildDefaultPrinter(config),
         _loader = DefaultFactory.buildDefaultLogLoader(config);
 
-  record(String name, String content) {
+  Future<void> record(String name, String content) async {
     _printer.record(RecordInfo(name, content));
   }
 
-  log(Level level, String message, [dynamic error, StackTrace? stackTrace]) {
+  Future<void> log(Level level, String message, [dynamic error, StackTrace? stackTrace]) async {
     _printer.log(LogEvent(level, message, error, stackTrace));
   }
 
@@ -41,7 +41,7 @@ class Logger {
 
   // copyToFlashMemoryDisk() {}
 
-  copyToFlashMemoryDiskFromPath(String path) {
+  Future<void> copyToFlashMemoryDiskFromPath(String path) async {
     _operator ??= FileOperator(_loader);
     _operator?.copyFilesTo(path);
   }

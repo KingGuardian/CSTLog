@@ -3,8 +3,8 @@ import 'package:cstlog/src/model/log_info.dart';
 
 abstract class Printer {
   //维修日志相关
-  record(RecordInfo logInfo);
+  Future<void> record(RecordInfo logInfo);
 
   //记录log
-  log(LogEvent logEvent);
+  Future<void> log(LogEvent logEvent);
 }

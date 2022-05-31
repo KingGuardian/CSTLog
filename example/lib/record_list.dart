@@ -31,6 +31,10 @@ class _RecordListPageState extends State<RecordListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("维修记录列表"),
+        actions: [IconButton(onPressed: () {
+          SnackBar snack = const SnackBar(content: Text("添加维修日志"));
+          ScaffoldMessenger.of(context).showSnackBar(snack);
+        }, icon: const Icon(Icons.add))],
       ),
       body: logList.isEmpty
           ? const Text("暂无维修记录")
