@@ -11,29 +11,50 @@ class FileOperator implements Operator {
   FileOperator(this._loader);
 
   @override
-  Future<bool> copyFilesTo(String path) async {
+  Future<String> exportDevelopLogTo(String path) async {
+    String errorMessage = '';
     String newLogPath = path + Platform.pathSeparator + additelLogFolderName;
-    await _createFolderIfNotExist(newLogPath);
-
-    String newRecordPath =
-        path + Platform.pathSeparator + additelRecordFolderName;
-    await _createFolderIfNotExist(newRecordPath);
-
+    try {
+      await _createFolderIfNotExist(newLogPath);
+    } catch(error) {
+      errorMessage = error.toString();
+      return errorMessage;
+    }
     List<LogFileInfo> logList = await _loader.loadLogs();
+    try {
+      for (LogFileInfo logFileInfo in logList) {
+        File file = File.fromUri(logFileInfo.uri);
+        await file
+            .copy(newLogPath + Platform.pathSeparator + logFileInfo.fileName);
+      }
+    } catch(error) {
+      errorMessage = error.toString();
+    }
+    return errorMessage;
+  }
+
+  @override
+  Future<String> exportRecordTo(String path) async {
+    String errorMessage = '';
+    String newRecordPath = path + Platform.pathSeparator + additelRecordFolderName;
+    try {
+      await _createFolderIfNotExist(newRecordPath);
+    } catch(error) {
+      errorMessage = error.toString();
+      return errorMessage;
+    }
+
     List<LogFileInfo> recordList = await _loader.loadRecords();
-
-    for (LogFileInfo logFileInfo in logList) {
-      File file = File.fromUri(logFileInfo.uri);
-      await file
-          .copy(newLogPath + Platform.pathSeparator + logFileInfo.fileName);
+    try {
+      for (LogFileInfo logFileInfo in recordList) {
+        File file = File.fromUri(logFileInfo.uri);
+        await file
+            .copy(newRecordPath + Platform.pathSeparator + logFileInfo.fileName);
+      }
+    } catch(error) {
+      errorMessage = error.toString();
     }
-
-    for (LogFileInfo logFileInfo in recordList) {
-      File file = File.fromUri(logFileInfo.uri);
-      await file
-          .copy(newRecordPath + Platform.pathSeparator + logFileInfo.fileName);
-    }
-    return true;
+    return errorMessage;
   }
 
   _createFolderIfNotExist(String path) async {

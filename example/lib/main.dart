@@ -122,9 +122,15 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         ElevatedButton(
-          child: const Text("复制文件"),
+          child: const Text("导出维修记录文件"),
           onPressed: () {
-            _copyFiles();
+            _exportFiles(context, false);
+          },
+        ),
+        ElevatedButton(
+          child: const Text("导出日志文件"),
+          onPressed: () {
+            _exportFiles(context, true);
           },
         ),
         ElevatedButton(
@@ -148,15 +154,19 @@ class _HomePageState extends State<HomePage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(path)));
   }
 
-  _copyFiles() async {
-    String path = "";
+  _exportFiles(BuildContext context, bool isLog) async {
+    String errorMessage = '';
     List<Directory>? dirList = await getExternalStorageDirectories();
-    if (dirList != null && dirList.isNotEmpty) {
-      for (Directory dir in dirList) {
-        path = dir.path + Platform.pathSeparator + "Copy";
-        await logInstance.copyToFlashMemoryDiskFromPath(path);
+    if (dirList == null || dirList.isEmpty || dirList.length == 1) {
+      errorMessage = "未检测到U盘";
+    } else {
+      String path = dirList.last.path + Platform.pathSeparator + "export";
+      errorMessage = isLog ? await logInstance.exportLogs(path) : await logInstance.exportRecords(path);
+      if (errorMessage.isEmpty) {
+        errorMessage = "导出成功";
       }
     }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
   }
 
   _printCurStraceInfo() {

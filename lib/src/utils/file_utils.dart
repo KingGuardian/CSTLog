@@ -16,20 +16,18 @@ class FileUtil {
   //   return false;
   // }
 
-  void writeContentTo(File? file, String content) async {
-    try {
-      // var openWrite = file?.openWrite(mode: FileMode.append);
-      // openWrite?.write(content);
-      // openWrite?.write("\n");
-      // await openWrite?.close();
-      file?.writeAsStringSync(content + "\n", mode: FileMode.append);
-    } catch (_) {}
+  writeContentTo(File? file, String content) async {
+    file?.writeAsStringSync(content + "\n", mode: FileMode.append);
   }
 
   List<LogFileInfo> getAllSubFile(String path) {
     Directory directory = Directory(path);
     if (directory.existsSync()) {
-      return directory.listSync().map((e) => _buildLogFile(e)).toList();
+      List<LogFileInfo> logList = directory.listSync().map((e) => _buildLogFile(e)).toList();
+      logList.sort((a, b) {
+        return b.lastModifyDate.compareTo(a.lastModifyDate);
+      });
+      return logList;
     }
     return [];
   }
@@ -46,6 +44,7 @@ class FileUtil {
     int size = sysFie.lengthSync();
     DateTime lastModifiedDate = sysFie.lastModifiedSync();
     String dateStr = lastModifiedDate.toString();
+    dateStr = dateStr.split('.')[0];
     return LogFileInfo(systemEntity.uri, name, size, _getFileSizeDes(size.toDouble()), dateStr);
   }
 

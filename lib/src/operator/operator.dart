@@ -1,3 +1,5 @@
 abstract class Operator {
-  Future<bool> copyFilesTo(String path);
+  Future<String> exportDevelopLogTo(String path);
+
+  Future<String> exportRecordTo(String path);
 }

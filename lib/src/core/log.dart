@@ -21,28 +21,37 @@ class Logger {
         _printer = DefaultFactory.buildDefaultPrinter(config),
         _loader = DefaultFactory.buildDefaultLogLoader(config);
 
-  Future<void> record(String name, String content) async {
-    _printer.record(RecordInfo(name, content));
+  /// 记录维修日志
+  Future<String> record(String name, String content) async {
+    return await _printer.record(RecordInfo(name, content));
   }
 
-  Future<void> log(Level level, String message, [dynamic error, StackTrace? stackTrace]) async {
-    _printer.log(LogEvent(level, message, error, stackTrace));
+  /// 记录开发日志
+  Future<String> log(Level level, String message, [dynamic error, StackTrace? stackTrace]) async {
+    return await _printer.log(LogEvent(level, message, error, stackTrace));
   }
 
+  /// 获取维修日志
   Future<List<LogFileInfo>> loadRecords() {
     return _loader.loadRecords();
   }
 
+  /// 获取开发日志
   Future<List<LogFileInfo>> loadLogs() {
     return _loader.loadLogs();
   }
 
-  // loadLogsFromPath(String path) {}
-
-  // copyToFlashMemoryDisk() {}
-
-  Future<void> copyToFlashMemoryDiskFromPath(String path) async {
+  /// 导出开发日志到路径
+  Future<String> exportLogs(String path) async {
     _operator ??= FileOperator(_loader);
-    _operator?.copyFilesTo(path);
+    String errorMessage = await _operator?.exportDevelopLogTo(path) ?? '';
+    return errorMessage;
+  }
+
+  /// 导出维修日志到路径
+  Future<String> exportRecords(String path) async {
+    _operator ??= FileOperator(_loader);
+    String errorMessage = await _operator?.exportRecordTo(path) ?? '';
+    return errorMessage;
   }
 }
