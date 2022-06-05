@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cstlog/cstlog.dart';
+import 'package:cstlog_example/GeneralDialog.dart';
 import 'package:cstlog_example/log_content.dart';
 import 'package:cstlog_example/record_list.dart';
 import 'package:flutter/material.dart';
@@ -122,9 +123,16 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         ElevatedButton(
-          child: const Text("复制文件"),
+          child: const Text("导出维修记录文件"),
           onPressed: () {
-            _copyFiles();
+            _showExportDialog(context);
+            // _exportFiles(context, false);
+          },
+        ),
+        ElevatedButton(
+          child: const Text("导出日志文件"),
+          onPressed: () {
+            _exportFiles(context, true);
           },
         ),
         ElevatedButton(
@@ -148,15 +156,25 @@ class _HomePageState extends State<HomePage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(path)));
   }
 
-  _copyFiles() async {
-    String path = "";
+  _showExportDialog(BuildContext context) {
+    showDialog(context: context, builder: (context) {
+      return GeneralDialog(title: "提示", content: "确定导出日志到U盘？", callback: () {
+        _exportFiles(context, false);
+      },);
+    });
+  }
+
+  _exportFiles(BuildContext context, bool isLog) async {
+    String errorMessage = '';
     List<Directory>? dirList = await getExternalStorageDirectories();
     if (dirList != null && dirList.isNotEmpty) {
-      for (Directory dir in dirList) {
-        path = dir.path + Platform.pathSeparator + "Copy";
-        await logInstance.copyToFlashMemoryDiskFromPath(path);
-      }
+      String path = dirList.last.path + Platform.pathSeparator + "Copy";
+      errorMessage = await logInstance.copyToFlashMemoryDiskFromPath(path);
     }
+    if (errorMessage.isEmpty) {
+      errorMessage = '导出成功';
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
   }
 
   _printCurStraceInfo() {
