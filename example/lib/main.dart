@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cstlog/cstlog.dart';
+import 'package:cstlog_example/GeneralDialog.dart';
 import 'package:cstlog_example/log_content.dart';
 import 'package:cstlog_example/record_list.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +125,7 @@ class _HomePageState extends State<HomePage> {
         ElevatedButton(
           child: const Text("导出维修记录文件"),
           onPressed: () {
-            _exportFiles(context, false);
+            _showExportDialog(context);
           },
         ),
         ElevatedButton(
@@ -152,6 +153,14 @@ class _HomePageState extends State<HomePage> {
       }
     }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(path)));
+  }
+
+  _showExportDialog(BuildContext context) {
+    showDialog(context: context, builder: (context) {
+      return GeneralDialog(title: "提示", content: "确定导出日志到U盘？", callback: () {
+        _exportFiles(context, false);
+      },);
+    });
   }
 
   _exportFiles(BuildContext context, bool isLog) async {

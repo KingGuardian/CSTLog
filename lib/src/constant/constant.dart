@@ -1,3 +1,3 @@
-const String additelLogFolderName = "AdditelLog";
-const String additelRecordFolderName = "AdditelRecrod";
+const String additelLogFolderName = 'Logs';
+const String additelRecordFolderName = 'Recrods';
 const int maxFileSize = 1024;

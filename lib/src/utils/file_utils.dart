@@ -8,16 +8,13 @@ class FileUtil {
 
   FileUtil._();
 
-  // bool checkFolderExist(String path, {bool create = false}) {
-  //   return false;
-  // }
-  //
-  // bool checkFileExist(String path, {bool create = false}) {
-  //   return false;
-  // }
-
-  writeContentTo(File? file, String content) async {
-    file?.writeAsStringSync(content + "\n", mode: FileMode.append);
+  void writeContentTo(File? file, String content) async {
+    if (content.isEmpty) {
+      return;
+    }
+    try {
+      file?.writeAsStringSync(content + '\n', mode: FileMode.append);
+    } catch (_) {}
   }
 
   List<LogFileInfo> getAllSubFile(String path) {
@@ -35,7 +32,7 @@ class FileUtil {
   LogFileInfo _buildLogFile(FileSystemEntity systemEntity) {
 
     File sysFie = File(systemEntity.path);
-    String name = "";
+    String name = '';
     List<String> dirList = systemEntity.path.split(Platform.pathSeparator);
     if (dirList.isNotEmpty) {
       name = dirList.last;
@@ -50,7 +47,7 @@ class FileUtil {
 
   String _getFileSizeDes(double size) {
     List<String> unitList = [
-      "B", "K", "M", "G",
+      'B', 'K', 'M', 'G',
     ];
 
     int unitIndex = 0;

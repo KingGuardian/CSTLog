@@ -16,8 +16,8 @@ class FilePrinter implements Printer {
   @override
   Future<String> log(LogEvent logEvent) async {
     String message = logEvent.message;
-    String errorMessage = logEvent.error?.toString() ?? "";
-    String traceMessage = _formatTraceMessage(logEvent.stackTrace) ?? "";
+    String errorMessage = logEvent.error?.toString() ?? '';
+    String traceMessage = _formatTraceMessage(logEvent.stackTrace) ?? '';
 
     String operatorErrorMessage = '';
 
@@ -30,8 +30,10 @@ class FilePrinter implements Printer {
 
     try {
       FileUtil.instantce.writeContentTo(logFile, message);
+      //打印时间戳
+      FileUtil.instantce.writeContentTo(logFile, DateTime.now().toString());
       FileUtil.instantce.writeContentTo(logFile, errorMessage);
-      FileUtil.instantce.writeContentTo(logFile, traceMessage);
+      FileUtil.instantce.writeContentTo(logFile, traceMessage + '\n\n\n\n');
     } catch (error) {
       operatorErrorMessage = error.toString();
     }
@@ -56,7 +58,6 @@ class FilePrinter implements Printer {
     return operatorErrorMessage;
   }
 
-  //两个方法要合并的，重复逻辑太多
   Future<File?> _initFileByEvent(bool isLog, {LogEvent? logEvent, RecordInfo? recordInfo}) async {
     String? storagePath = isLog ? await _getLogStoragePath() : await _getRecordStoragePath();
     if (storagePath == null) {
@@ -82,13 +83,13 @@ class FilePrinter implements Printer {
       if (_fileConfig.fileSplitStrategy.isNeedCreateNewFile(recordFile)) {
         //新建文件的名字处理，暂时没想到什么好方法，就先按顺序查一下文件是否存在吧
         int extraFileTail = 1;
-        List<String> strList = fileName.split(".");
-        String newFileName = strList[0] + "_" + "$extraFileTail" + strList[1];
+        List<String> strList = fileName.split('.');
+        String newFileName = strList[0] + '_' + '$extraFileTail' + strList[1];
         File newFile = File(newFileName);
         while (newFile.existsSync() &&
             _fileConfig.fileSplitStrategy.isNeedCreateNewFile(newFile)) {
           extraFileTail++;
-          newFileName = strList[0] + "_" + "$extraFileTail" + strList[1];
+          newFileName = strList[0] + '_' + '$extraFileTail' + strList[1];
           newFile = File(newFileName);
         }
         return newFile;

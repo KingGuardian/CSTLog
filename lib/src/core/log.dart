@@ -13,12 +13,10 @@ import 'package:cstlog/src/utils/default_factory.dart';
 class Logger {
   final Printer _printer;
   final LogLoader _loader;
-  final LogConfig _logConfig;
   Operator? _operator;
 
   Logger.init({LogConfig? config})
-      : _logConfig = config ??= DefaultFactory.buildDefaultLogConfig(),
-        _printer = DefaultFactory.buildDefaultPrinter(config),
+      : _printer = DefaultFactory.buildDefaultPrinter(config),
         _loader = DefaultFactory.buildDefaultLogLoader(config);
 
   /// 记录维修日志
