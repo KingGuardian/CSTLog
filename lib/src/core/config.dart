@@ -14,7 +14,7 @@ class LogConfig {
 }
 
 class LogConfigBuilder {
-  String tag = "Additel";
+  String tag = 'Additel';
   String logFolderName = additelLogFolderName;
   String recordFolderName = additelRecordFolderName;
   LogStorageType storageType = LogStorageType.externalStorage;

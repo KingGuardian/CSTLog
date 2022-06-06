@@ -13,12 +13,10 @@ import 'package:cstlog/src/utils/default_factory.dart';
 class Logger {
   final Printer _printer;
   final LogLoader _loader;
-  final LogConfig _logConfig;
   Operator? _operator;
 
   Logger.init({LogConfig? config})
-      : _logConfig = config ??= DefaultFactory.buildDefaultLogConfig(),
-        _printer = DefaultFactory.buildDefaultPrinter(config),
+      : _printer = DefaultFactory.buildDefaultPrinter(config),
         _loader = DefaultFactory.buildDefaultLogLoader(config);
 
   record(String name, String content) {
@@ -36,10 +34,6 @@ class Logger {
   Future<List<LogFileInfo>> loadLogs() {
     return _loader.loadLogs();
   }
-
-  // loadLogsFromPath(String path) {}
-
-  // copyToFlashMemoryDisk() {}
 
   copyToFlashMemoryDiskFromPath(String path) {
     _operator ??= FileOperator(_loader);

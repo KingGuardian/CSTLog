@@ -13,37 +13,36 @@ class DefaultFileNameStrategy implements FileNameStrategy {
   @override
   String generateLogFileName(LogEvent logInfo) {
     //日志文件的命名规则
-    return "log" +
-        "_" +
+    return 'log_' +
         _getLevelDescription(logInfo) +
-        "_" +
+        '_' +
         _getDateTime() +
         _getFileTail();
   }
 
   @override
   String generateRecordFileName(RecordInfo logInfo) {
-    String fileName = logInfo.name.isEmpty ? "AdditelRecord" : logInfo.name;
-    return fileName + "_" + _getDateTime() + _getFileTail();
+    String fileName = logInfo.name.isEmpty ? 'AdditelRecord' : logInfo.name;
+    return fileName + '_' + _getDateTime() + _getFileTail();
   }
 
   String _getLevelDescription(LogEvent logInfo) {
-    String levelDes = "";
+    String levelDes = '';
     switch (logInfo.level) {
       case Level.verbose:
-        levelDes = "verbose";
+        levelDes = 'verbose';
         break;
       case Level.debug:
-        levelDes = "debug";
+        levelDes = 'debug';
         break;
       case Level.info:
-        levelDes = "info";
+        levelDes = 'info';
         break;
       case Level.warning:
-        levelDes = "warning";
+        levelDes = 'warning';
         break;
       case Level.error:
-        levelDes = "error";
+        levelDes = 'error';
         break;
     }
     return levelDes;
@@ -51,11 +50,10 @@ class DefaultFileNameStrategy implements FileNameStrategy {
 
   String _getDateTime() {
     DateTime dateTime = DateTime.now();
-    return "${dateTime.year}_${dateTime.month}_${dateTime.day}";
+    return '${dateTime.year}_${dateTime.month}_${dateTime.day}';
   }
 
   String _getFileTail() {
-    return Platform.isIOS ? ".text" : ".txt";
-    ;
+    return '.log';
   }
 }
