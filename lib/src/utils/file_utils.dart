@@ -36,6 +36,10 @@ class FileUtil {
     List<String> dirList = systemEntity.path.split(Platform.pathSeparator);
     if (dirList.isNotEmpty) {
       name = dirList.last;
+      List<String> nameList = name.split('.');
+      if (nameList.isNotEmpty) {
+        name = nameList.first;
+      }
     }
 
     int size = sysFie.lengthSync();

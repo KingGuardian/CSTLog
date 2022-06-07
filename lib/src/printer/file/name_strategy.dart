@@ -13,8 +13,7 @@ class DefaultFileNameStrategy implements FileNameStrategy {
   @override
   String generateLogFileName(LogEvent logInfo) {
     //日志文件的命名规则
-    return 'log_' +
-        _getLevelDescription(logInfo) +
+    return _getLevelDescription(logInfo) +
         '_' +
         _getDateTime() +
         _getFileTail();

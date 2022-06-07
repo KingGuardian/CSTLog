@@ -29,11 +29,13 @@ class FilePrinter implements Printer {
     }
 
     try {
-      FileUtil.instantce.writeContentTo(logFile, message);
       //打印时间戳
-      FileUtil.instantce.writeContentTo(logFile, DateTime.now().toString());
+      String dateTime = getDateTime();
+      FileUtil.instantce
+          .writeContentTo(logFile, '--------  ' + dateTime + '  --------');
+      FileUtil.instantce.writeContentTo(logFile, message);
       FileUtil.instantce.writeContentTo(logFile, errorMessage);
-      FileUtil.instantce.writeContentTo(logFile, traceMessage + '\n\n\n\n');
+      FileUtil.instantce.writeContentTo(logFile, traceMessage + '\n');
     } catch (error) {
       operatorErrorMessage = error.toString();
     }
@@ -58,8 +60,10 @@ class FilePrinter implements Printer {
     return operatorErrorMessage;
   }
 
-  Future<File?> _initFileByEvent(bool isLog, {LogEvent? logEvent, RecordInfo? recordInfo}) async {
-    String? storagePath = isLog ? await _getLogStoragePath() : await _getRecordStoragePath();
+  Future<File?> _initFileByEvent(bool isLog,
+      {LogEvent? logEvent, RecordInfo? recordInfo}) async {
+    String? storagePath =
+        isLog ? await _getLogStoragePath() : await _getRecordStoragePath();
     if (storagePath == null) {
       //可能平台不支持，这里的错误提示还需要细化，看是否返回一个error
       return null;
@@ -134,6 +138,10 @@ class FilePrinter implements Printer {
   }
 
   String? _formatTraceMessage(StackTrace? stackTrace) {
+    if (stackTrace == null) {
+      return '\n';
+    }
+
     int maxLines = 10;
     var lines = stackTrace.toString().split('\n');
     var formatted = <String>[];
@@ -151,5 +159,11 @@ class FilePrinter implements Printer {
     } else {
       return formatted.join('\n');
     }
+  }
+
+  String getDateTime() {
+    String dateStr = DateTime.now().toString();
+    dateStr = dateStr.split('.')[0];
+    return dateStr;
   }
 }
