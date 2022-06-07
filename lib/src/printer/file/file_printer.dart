@@ -138,12 +138,13 @@ class FilePrinter implements Printer {
   }
 
   String? _formatTraceMessage(StackTrace? stackTrace) {
-    if (stackTrace == null) {
+    String stackContent = stackTrace?.toString() ?? "";
+    if (stackContent.isEmpty) {
       return '\n';
     }
 
-    int maxLines = 10;
-    var lines = stackTrace.toString().split('\n');
+    int maxLines = 15;
+    var lines = stackContent.split('\n');
     var formatted = <String>[];
     var count = 0;
     for (var line in lines) {
