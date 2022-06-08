@@ -39,28 +39,10 @@ class FileLogLoader implements LogLoader {
   }
 
   Future<String?> _getTargetStoragePath(String folderName) async {
-    Directory? storageDirectory = await _getDeviceStoragePath();
+    Directory? storageDirectory = await FileUtil.instantce.getDeviceStoragePath(_loaderConfig.storageType);
     String? path = storageDirectory != null
         ? storageDirectory.path + Platform.pathSeparator + folderName
         : null;
     return path;
-  }
-
-  Future<Directory?> _getDeviceStoragePath() async {
-    Directory? storageDirectory;
-    switch (_loaderConfig.storageType) {
-      case LogStorageType.applicationSupport:
-        storageDirectory = await getApplicationSupportDirectory();
-        break;
-      case LogStorageType.applicationDoucument:
-        storageDirectory = await getApplicationDocumentsDirectory();
-        break;
-      case LogStorageType.externalStorage:
-        storageDirectory = await getExternalStorageDirectory();
-        break;
-      default:
-        break;
-    }
-    return storageDirectory;
   }
 }

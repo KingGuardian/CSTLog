@@ -73,34 +73,26 @@ class FilePrinter implements Printer {
       storateDir.createSync(recursive: true);
     }
 
-    String fileName = isLog
+    String defaultFileName = isLog
         ? _fileConfig.fileNameStrategy.generateLogFileName(logEvent!)
         : _fileConfig.fileNameStrategy.generateRecordFileName(recordInfo!);
-    String filePath = storagePath + Platform.pathSeparator + fileName;
 
+    int fileIndex = 0;
+    String fileName = getFileNameWithIndex(defaultFileName, fileIndex);
+    String filePath = storagePath + Platform.pathSeparator + fileName;
     File recordFile = File(filePath);
+    //判断文件是否需要拆分
+    while (recordFile.existsSync() &&
+        _fileConfig.fileSplitStrategy.isNeedCreateNewFile(recordFile)) {
+      fileIndex++;
+      fileName = getFileNameWithIndex(defaultFileName, fileIndex);
+      filePath = storagePath + Platform.pathSeparator + fileName;
+      recordFile = File(filePath);
+    }
     if (!recordFile.existsSync()) {
       recordFile.createSync();
-      return recordFile;
-    } else {
-      //根据策略判断是否要新建文件
-      if (_fileConfig.fileSplitStrategy.isNeedCreateNewFile(recordFile)) {
-        //新建文件的名字处理，暂时没想到什么好方法，就先按顺序查一下文件是否存在吧
-        int extraFileTail = 1;
-        List<String> strList = fileName.split('.');
-        String newFileName = strList[0] + '_' + '$extraFileTail' + strList[1];
-        File newFile = File(newFileName);
-        while (newFile.existsSync() &&
-            _fileConfig.fileSplitStrategy.isNeedCreateNewFile(newFile)) {
-          extraFileTail++;
-          newFileName = strList[0] + '_' + '$extraFileTail' + strList[1];
-          newFile = File(newFileName);
-        }
-        return newFile;
-      } else {
-        return recordFile;
-      }
     }
+    return recordFile;
   }
 
   Future<String?> _getLogStoragePath() async {
@@ -112,29 +104,11 @@ class FilePrinter implements Printer {
   }
 
   Future<String?> _getTargetStoragePath(String folderName) async {
-    Directory? storageDirectory = await _getDeviceStoragePath();
+    Directory? storageDirectory = await FileUtil.instantce.getDeviceStoragePath(_fileConfig.storageType);
     String? path = storageDirectory != null
         ? storageDirectory.path + Platform.pathSeparator + folderName
         : null;
     return path;
-  }
-
-  Future<Directory?> _getDeviceStoragePath() async {
-    Directory? storageDirectory;
-    switch (_fileConfig.storageType) {
-      case LogStorageType.applicationSupport:
-        storageDirectory = await getApplicationSupportDirectory();
-        break;
-      case LogStorageType.applicationDoucument:
-        storageDirectory = await getApplicationDocumentsDirectory();
-        break;
-      case LogStorageType.externalStorage:
-        storageDirectory = await getExternalStorageDirectory();
-        break;
-      default:
-        break;
-    }
-    return storageDirectory;
   }
 
   String? _formatTraceMessage(StackTrace? stackTrace) {
@@ -166,5 +140,10 @@ class FilePrinter implements Printer {
     String dateStr = DateTime.now().toString();
     dateStr = dateStr.split('.')[0];
     return dateStr;
+  }
+
+  String getFileNameWithIndex(String fileName, int index) {
+    final fileNameList = fileName.split('.');
+    return fileNameList[0] + '-' + index.toString() + '.' + fileNameList[1];
   }
 }

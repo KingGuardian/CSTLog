@@ -15,7 +15,7 @@ class FileLoaderConfig {
 class FileLoaderConfigBuilder {
   String logFolderName = additelLogFolderName;
   String recordFolderName = additelRecordFolderName;
-  LogStorageType storageType = LogStorageType.applicationDoucument;
+  LogStorageType storageType = LogStorageType.externalDoucument;
 
   FileLoaderConfigBuilder withLogFolderName(String name) {
     logFolderName = name;

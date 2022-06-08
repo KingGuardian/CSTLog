@@ -17,7 +17,7 @@ class LogConfigBuilder {
   String tag = 'Additel';
   String logFolderName = additelLogFolderName;
   String recordFolderName = additelRecordFolderName;
-  LogStorageType storageType = LogStorageType.externalStorage;
+  LogStorageType storageType = LogStorageType.externalDoucument;
 
   LogConfigBuilder withTag(String tag) {
     this.tag = tag;
@@ -45,7 +45,6 @@ class LogConfigBuilder {
 }
 
 enum LogStorageType {
-  applicationSupport,
-  applicationDoucument,
+  externalDoucument,
   externalStorage,
 }
