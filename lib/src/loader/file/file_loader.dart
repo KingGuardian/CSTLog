@@ -4,6 +4,7 @@ import 'package:cstlog/src/core/config.dart';
 import 'package:cstlog/src/loader/file/file_loader_config.dart';
 import 'package:cstlog/src/loader/loader.dart';
 import 'package:cstlog/src/model/log_file_info.dart';
+import 'package:cstlog/src/model/log_info.dart';
 import 'package:cstlog/src/utils/file_utils.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -13,12 +14,12 @@ class FileLogLoader implements LogLoader {
   FileLogLoader(this._loaderConfig);
 
   @override
-  Future<List<LogFileInfo>> loadRecords() async {
+  Future<List<RecordInfo>> loadRecords() async {
     String? recordPath = await _getRecordStoragePath();
     if (recordPath == null) {
       return [];
     }
-    return FileUtil.instantce.getAllSubFile(recordPath);
+    return FileUtil.instantce.getAllRecordFile(recordPath);
   }
 
   @override

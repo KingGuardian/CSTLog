@@ -10,11 +10,16 @@ class RecordListPage extends StatefulWidget {
 }
 
 class _RecordListPageState extends State<RecordListPage> {
-  List<LogFileInfo> logList = [];
+  List<RecordInfo> logList = [];
+
+  late Logger logInstance;
 
   @override
   void initState() {
     super.initState();
+
+    LogConfig config = LogConfigBuilder().withLogStorageType(LogStorageType.externalDoucument).build();
+    logInstance = Logger.init(config: config);
 
     _loadLogs();
   }
@@ -51,21 +56,21 @@ class _RecordListPageState extends State<RecordListPage> {
   }
 
   Widget _buildItemView(BuildContext context, int index) {
-    LogFileInfo entity = logList[index];
+    RecordInfo entity = logList[index];
 
     return ListTile(
       leading: const Icon(Icons.insert_drive_file_rounded),
       title: Text(
-        entity.fileName,
+        entity.fileName ?? entity.title,
         style: const TextStyle(
             fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
-        entity.lastModifyDate,
+        entity.date,
         style: const TextStyle(fontSize: 14, color: Colors.grey),
       ),
       onTap: () {
-        Navigator.of(context).pushNamed("LogContent", arguments: entity);
+        Navigator.of(context).pushNamed("RecordContent", arguments: entity);
       },
     );
   }

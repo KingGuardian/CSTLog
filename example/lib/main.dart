@@ -3,14 +3,13 @@ import 'dart:io';
 import 'package:cstlog/cstlog.dart';
 import 'package:cstlog_example/GeneralDialog.dart';
 import 'package:cstlog_example/log_content.dart';
+import 'package:cstlog_example/record_content.dart';
 import 'package:cstlog_example/record_list.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'log_list.dart';
-
-Logger logInstance = Logger.init();
 
 void main() {
   runApp(const MyApp());
@@ -24,10 +23,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +32,7 @@ class _MyAppState extends State<MyApp> {
         "LogList": (BuildContext context) => const LogListPage(),
         "RecordList": (BuildContext context) => const RecordListPage(),
         "LogContent": (BuildContext context) => const LogContentPage(),
+        "RecordContent": (BuildContext context) => const RecordContentPage(),
       },
       initialRoute: "Home",
     );
@@ -53,6 +49,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController? titleController;
   TextEditingController? contentController;
+  TextEditingController? operatorController;
+
+  late Logger logInstance;
 
   @override
   void initState() {
@@ -60,6 +59,10 @@ class _HomePageState extends State<HomePage> {
 
     titleController = TextEditingController(text: "维修记录标题");
     contentController = TextEditingController(text: "维修记录内容");
+    operatorController = TextEditingController(text: "维修记录操作人");
+
+    LogConfig config = LogConfigBuilder().withLogStorageType(LogStorageType.externalDoucument).build();
+    logInstance = Logger.init(config: config);
   }
 
   @override
@@ -87,14 +90,21 @@ class _HomePageState extends State<HomePage> {
             controller: contentController,
           ),
         ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+          child: TextField(
+            controller: operatorController,
+          ),
+        ),
         ElevatedButton(
           child: const Text("添加维修记录"),
           onPressed: () {
             String title = titleController?.text ?? "";
             String content = contentController?.text ?? "";
+            String operator = operatorController?.text ?? "";
             if (title.isNotEmpty && content.isNotEmpty) {
               //添加日志
-              logInstance.record(title, content);
+              logInstance.record(title, content, operator, '2022-06-08 15:00:00');
             }
           },
         ),
@@ -137,11 +147,18 @@ class _HomePageState extends State<HomePage> {
         ElevatedButton(
           child: const Text("申请权限"),
           onPressed: () {
-            _requestStoragePersmission();
+            _checkPermission();
           },
         ),
       ],
     );
+  }
+
+  Future<void> _checkPermission() async {
+    final storagePermission = await _requestStoragePersmission();
+    if (storagePermission) {
+      _requestManageStoratePermission();
+    }
   }
 
   _checkExternalPath() async {
@@ -182,14 +199,35 @@ class _HomePageState extends State<HomePage> {
     logInstance.log(Level.error, "打印堆栈信息", "错误原因：人为打印", StackTrace.current);
   }
 
-  _requestStoragePersmission() async {
+  Future<bool> _requestStoragePersmission() async {
     var status = await Permission.storage.status;
+
+    if (status.isGranted) {
+      return true;
+    }
+
     if (status.isDenied) {
       status = await Permission.storage.request();
       if (status.isGranted) {
-        print("success get permission");
+        return true;
       }
-      // We didn't ask for permission yet or the permission has been denied before but not permanently.
     }
+    return false;
+  }
+
+  _requestManageStoratePermission() async {
+    var status = await Permission.manageExternalStorage.status;
+
+    if (status.isGranted) {
+      return true;
+    }
+
+    if (status.isDenied) {
+      status = await Permission.storage.request();
+      if (status.isGranted) {
+        return true;
+      }
+    }
+    return false;
   }
 }

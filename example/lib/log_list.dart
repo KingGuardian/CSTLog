@@ -12,9 +12,14 @@ class LogListPage extends StatefulWidget {
 class _LogListPageState extends State<LogListPage> {
   List<LogFileInfo> logList = [];
 
+  late Logger logInstance;
+
   @override
   void initState() {
     super.initState();
+
+    LogConfig config = LogConfigBuilder().withLogStorageType(LogStorageType.externalDoucument).build();
+    logInstance = Logger.init(config: config);
 
     _loadLogs();
   }

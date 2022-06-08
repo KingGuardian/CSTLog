@@ -20,8 +20,8 @@ class Logger {
         _loader = DefaultFactory.buildDefaultLogLoader(config);
 
   /// 记录维修日志
-  Future<String> record(String name, String content) async {
-    return await _printer.record(RecordInfo(name, content));
+  Future<String> record(String name, String content, String operatorName, String date) async {
+    return await _printer.record(RecordInfo(name, content, operatorName, date));
   }
 
   /// 记录开发日志
@@ -30,7 +30,7 @@ class Logger {
   }
 
   /// 获取维修日志
-  Future<List<LogFileInfo>> loadRecords() {
+  Future<List<RecordInfo>> loadRecords() {
     return _loader.loadRecords();
   }
 

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cstlog/cstlog.dart';
 import 'package:cstlog/src/constant/constant.dart';
 import 'package:cstlog/src/loader/loader.dart';
+import 'package:cstlog/src/model/log_info.dart';
 import 'package:cstlog/src/operator/operator.dart';
 
 class FileOperator implements Operator {
@@ -44,12 +45,16 @@ class FileOperator implements Operator {
       return errorMessage;
     }
 
-    List<LogFileInfo> recordList = await _loader.loadRecords();
+    List<RecordInfo> recordList = await _loader.loadRecords();
     try {
-      for (LogFileInfo logFileInfo in recordList) {
-        File file = File.fromUri(logFileInfo.uri);
-        await file
-            .copy(newRecordPath + Platform.pathSeparator + logFileInfo.fileName);
+      for (RecordInfo logFileInfo in recordList) {
+        final uri = logFileInfo.uri;
+        if (uri != null) {
+          File file = File.fromUri(uri);
+          String fileName = logFileInfo.fileName ?? logFileInfo.title;
+          await file
+              .copy(newRecordPath + Platform.pathSeparator + fileName);
+        }
       }
     } catch(error) {
       errorMessage = error.toString();

@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:cstlog/src/constant/constant.dart';
 import 'package:cstlog/src/core/config.dart';
 import 'package:cstlog/src/model/log_file_info.dart';
+import 'package:cstlog/src/model/log_info.dart';
 import 'package:cstlog/src/printer/file/file_config.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -10,13 +12,15 @@ class FileUtil {
 
   FileUtil._();
 
-  void writeContentTo(File? file, String content) async {
+  void writeContentTo(File? file, String content, {FileMode mode = FileMode.append}) async {
     if (content.isEmpty) {
       return;
     }
     try {
-      file?.writeAsStringSync(content + '\n', mode: FileMode.append);
-    } catch (_) {}
+      file?.writeAsStringSync(content + '\n', mode: mode);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   List<LogFileInfo> getAllSubFile(String path) {
@@ -28,6 +32,19 @@ class FileUtil {
         return b.lastModifyDate.compareTo(a.lastModifyDate);
       });
       return logList;
+    }
+    return [];
+  }
+
+  List<RecordInfo> getAllRecordFile(String path) {
+    Directory directory = Directory(path);
+    if (directory.existsSync()) {
+      List<RecordInfo> recordList =
+      directory.listSync().map((e) => _buildRecordInfo(e)).toList();
+      recordList.sort((a, b) {
+        return b.date.compareTo(a.date);
+      });
+      return recordList;
     }
     return [];
   }
@@ -50,6 +67,25 @@ class FileUtil {
     dateStr = dateStr.split('.')[0];
     return LogFileInfo(systemEntity.uri, name, size,
         _getFileSizeDes(size.toDouble()), dateStr);
+  }
+
+  RecordInfo _buildRecordInfo(FileSystemEntity systemEntity) {
+    final sysFile = File(systemEntity.path);
+    String name = '';
+    List<String> dirList = systemEntity.path.split(Platform.pathSeparator);
+    if (dirList.isNotEmpty) {
+      name = dirList.last;
+      List<String> nameList = name.split('.');
+      if (nameList.isNotEmpty) {
+        name = nameList.first;
+      }
+    }
+
+    final fileContent = sysFile.readAsStringSync();
+    RecordInfo recordInfo = RecordInfo.initWithFileContent(fileContent);
+    recordInfo.uri = systemEntity.uri;
+    recordInfo.fileName = name;
+    return recordInfo;
   }
 
   String _getFileSizeDes(double size) {
@@ -80,7 +116,7 @@ class FileUtil {
         String path = storageDirectory?.path ?? '';
         if (path.isNotEmpty) {
            final pathList = path.split('Android');
-           path = pathList[0] + 'Documents';
+           path = pathList[0] + 'Documents' + Platform.pathSeparator + additelFolderName;
            storageDirectory = Directory(path);
         } else {
           storageDirectory = await getApplicationDocumentsDirectory();

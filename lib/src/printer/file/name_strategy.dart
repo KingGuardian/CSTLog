@@ -19,8 +19,8 @@ class DefaultFileNameStrategy implements FileNameStrategy {
 
   @override
   String generateRecordFileName(RecordInfo logInfo) {
-    String fileName = logInfo.name.isEmpty ? 'AdditelRecord' : logInfo.name;
-    return fileName + '_' + _getDateTime() + _getFileTail();
+    String fileName = logInfo.title.isEmpty ? '维修记录' : logInfo.title;
+    return fileName + _getFileTail();
   }
 
   String _getLevelDescription(LogEvent logInfo) {

@@ -53,7 +53,8 @@ class FilePrinter implements Printer {
     }
 
     try {
-      FileUtil.instantce.writeContentTo(logFile, recordInfo.content);
+      //维修记录和日志不同，使用覆盖方式，因为要从文件内容中读取到存储的信息
+      FileUtil.instantce.writeContentTo(logFile, recordInfo.getWriteContent(), mode: FileMode.write);
     } catch (error) {
       operatorErrorMessage = error.toString();
     }
@@ -76,18 +77,23 @@ class FilePrinter implements Printer {
     String defaultFileName = isLog
         ? _fileConfig.fileNameStrategy.generateLogFileName(logEvent!)
         : _fileConfig.fileNameStrategy.generateRecordFileName(recordInfo!);
-
-    int fileIndex = 0;
-    String fileName = getFileNameWithIndex(defaultFileName, fileIndex);
-    String filePath = storagePath + Platform.pathSeparator + fileName;
+    String filePath = storagePath + Platform.pathSeparator + defaultFileName;
     File recordFile = File(filePath);
-    //判断文件是否需要拆分
-    while (recordFile.existsSync() &&
-        _fileConfig.fileSplitStrategy.isNeedCreateNewFile(recordFile)) {
-      fileIndex++;
-      fileName = getFileNameWithIndex(defaultFileName, fileIndex);
+
+    if (logEvent != null) {
+      //目前只有系统日志需要执行拆分操作，同样，命名规则也应该只有日志才需要加文件后缀编号
+      int fileIndex = 0;
+      String fileName = getFileNameWithIndex(defaultFileName, fileIndex);
       filePath = storagePath + Platform.pathSeparator + fileName;
       recordFile = File(filePath);
+      //判断文件是否需要拆分
+      while (recordFile.existsSync() &&
+          _fileConfig.fileSplitStrategy.isNeedCreateNewFile(recordFile)) {
+        fileIndex++;
+        fileName = getFileNameWithIndex(defaultFileName, fileIndex);
+        filePath = storagePath + Platform.pathSeparator + fileName;
+        recordFile = File(filePath);
+      }
     }
     if (!recordFile.existsSync()) {
       recordFile.createSync();
