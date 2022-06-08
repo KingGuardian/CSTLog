@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cstlog/src/model/log_event.dart';
 import 'package:cstlog/src/model/log_info.dart';
 
@@ -49,7 +47,9 @@ class DefaultFileNameStrategy implements FileNameStrategy {
 
   String _getDateTime() {
     DateTime dateTime = DateTime.now();
-    return '${dateTime.year}_${dateTime.month}_${dateTime.day}';
+    String month = dateTime.month.toString().padLeft(2, '0');
+    String day = dateTime.day.toString().padLeft(2, '0');
+    return '${dateTime.year}_${month}_$day';
   }
 
   String _getFileTail() {
