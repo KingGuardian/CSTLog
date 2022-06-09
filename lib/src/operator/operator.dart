@@ -1,5 +1,7 @@
-abstract class Operator {
-  Future<String> exportDevelopLogTo(String path);
+import 'package:cstlog/cstlog.dart';
 
-  Future<String> exportRecordTo(String path);
+abstract class Operator {
+  Future<String> exportDevelopLogTo(String path, List<LogFileInfo> logList);
+
+  Future<String> exportRecordTo(String path, List<RecordInfo> recordList);
 }

@@ -12,7 +12,8 @@ class FileUtil {
 
   FileUtil._();
 
-  void writeContentTo(File? file, String content, {FileMode mode = FileMode.append}) async {
+  void writeContentTo(File? file, String content,
+      {FileMode mode = FileMode.append}) async {
     if (content.isEmpty) {
       return;
     }
@@ -40,7 +41,7 @@ class FileUtil {
     Directory directory = Directory(path);
     if (directory.existsSync()) {
       List<RecordInfo> recordList =
-      directory.listSync().map((e) => _buildRecordInfo(e)).toList();
+          directory.listSync().map((e) => _buildRecordInfo(e)).toList();
       recordList.sort((a, b) {
         return b.date.compareTo(a.date);
       });
@@ -82,7 +83,7 @@ class FileUtil {
     }
 
     final fileContent = sysFile.readAsStringSync();
-    RecordInfo recordInfo = RecordInfo.initWithFileContent(fileContent);
+    RecordInfo recordInfo = RecordInfo.frromJson(fileContent);
     recordInfo.uri = systemEntity.uri;
     recordInfo.fileName = name;
     return recordInfo;
@@ -115,9 +116,12 @@ class FileUtil {
       case LogStorageType.externalDoucument:
         String path = storageDirectory?.path ?? '';
         if (path.isNotEmpty) {
-           final pathList = path.split('Android');
-           path = pathList[0] + 'Documents' + Platform.pathSeparator + additelFolderName;
-           storageDirectory = Directory(path);
+          final pathList = path.split('Android');
+          path = pathList[0] +
+              'Documents' +
+              Platform.pathSeparator +
+              additelFolderName;
+          storageDirectory = Directory(path);
         } else {
           storageDirectory = await getApplicationDocumentsDirectory();
         }

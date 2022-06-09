@@ -23,7 +23,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -61,7 +60,9 @@ class _HomePageState extends State<HomePage> {
     contentController = TextEditingController(text: "维修记录内容");
     operatorController = TextEditingController(text: "维修记录操作人");
 
-    LogConfig config = LogConfigBuilder().withLogStorageType(LogStorageType.externalDoucument).build();
+    LogConfig config = LogConfigBuilder()
+        .withLogStorageType(LogStorageType.externalDoucument)
+        .build();
     logInstance = Logger.init(config: config);
   }
 
@@ -104,7 +105,8 @@ class _HomePageState extends State<HomePage> {
             String operator = operatorController?.text ?? "";
             if (title.isNotEmpty && content.isNotEmpty) {
               //添加日志
-              logInstance.record(title, content, operator, '2022-06-08 15:00:00');
+              logInstance.record(
+                  title, content, operator, '2022-06-08 15:00:00');
             }
           },
         ),
@@ -173,11 +175,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   _showExportDialog(BuildContext context) {
-    showDialog(context: context, builder: (context) {
-      return GeneralDialog(title: "提示", content: "确定导出日志到U盘？", callback: () {
-        _exportFiles(context, false);
-      },);
-    });
+    showDialog(
+        context: context,
+        builder: (context) {
+          return GeneralDialog(
+            title: "提示",
+            content: "确定导出日志到U盘？",
+            callback: () {
+              _exportFiles(context, false);
+            },
+          );
+        });
   }
 
   _exportFiles(BuildContext context, bool isLog) async {
@@ -186,13 +194,23 @@ class _HomePageState extends State<HomePage> {
     if (dirList == null || dirList.isEmpty || dirList.length == 1) {
       errorMessage = "未检测到U盘";
     } else {
-      String path = dirList.last.path + Platform.pathSeparator + "export";
-      errorMessage = isLog ? await logInstance.exportLogs(path) : await logInstance.exportRecords(path);
+      String path = dirList.last.path;
+      final pathList = path.split('Android');
+      path = pathList[0] + 'Documents' + Platform.pathSeparator + 'export';
+
+      if (isLog) {
+        final logList = await logInstance.loadLogs();
+        errorMessage = await logInstance.exportLogs(path, logList);
+      } else {
+        final recordList = await logInstance.loadRecords();
+        errorMessage = await logInstance.exportRecords(path, recordList);
+      }
       if (errorMessage.isEmpty) {
         errorMessage = "导出成功";
       }
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(errorMessage)));
   }
 
   _printCurStraceInfo() {

@@ -1,4 +1,4 @@
-import 'package:cstlog/cstlog.dart';
+import 'dart:convert';
 
 class RecordInfo {
   final String title;
@@ -10,26 +10,25 @@ class RecordInfo {
 
   RecordInfo(this.title, this.content, this.operatorName, this.date);
 
-  factory RecordInfo.initWithFileContent(String fileContent) {
-    final contentList = fileContent.split('.\n');
-    String title = contentList.isNotEmpty ? contentList[0] : '';
-    String operatorName = contentList.length > 1 ? contentList[1] : '';
-    String date = contentList.length > 2 ? contentList[2] : '';
-    StringBuffer content = StringBuffer('');
-    if (contentList.length > 3) {
-      final subList = contentList.sublist(3);
-      for (var element in subList) {
-        content.write(element);
-      }
-    }
-    return RecordInfo(title, content.toString(), operatorName, date);
+  factory RecordInfo.frromJson(String jsonContent) {
+    final Map<String, dynamic> data = json.decode(jsonContent);
+    String title = data.containsKey('title') ? data['title'] : '';
+    String operatorName = data.containsKey('operatorName') ? data['operatorName'] : '';;
+    String content = data.containsKey('content') ? data['content'] : '';;
+    String date = data.containsKey('date') ? data['date'] : '';;
+    return RecordInfo(title, content, operatorName, date);
   }
 
   String getWriteContent() {
-    String writeContent = title;
-    writeContent = writeContent + '.\n' + operatorName;
-    writeContent = writeContent + '.\n' + date;
-    writeContent = writeContent + '.\n' + content;
-    return writeContent;
+    return _toJson();
+  }
+
+  String _toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['title'] = title;
+    data['content'] = content;
+    data['operatorName'] = operatorName;
+    data['date'] = date;
+    return json.encode(data);
   }
 }
