@@ -20,6 +20,7 @@ class DefaultFileNameStrategy implements FileNameStrategy {
   @override
   String generateRecordFileName(RecordInfo logInfo) {
     String fileName = logInfo.title.isEmpty ? '维修记录' : logInfo.title;
+    fileName = Uri.encodeFull(fileName);
     return fileName + _getFileTail();
   }
 

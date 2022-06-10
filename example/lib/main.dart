@@ -103,10 +103,13 @@ class _HomePageState extends State<HomePage> {
             String title = titleController?.text ?? "";
             String content = contentController?.text ?? "";
             String operator = operatorController?.text ?? "";
+            DateTime dateTime = DateTime.now();
+            String year = dateTime.year.toString();
+            String month = dateTime.month.toString().padLeft(2, '0');
+            String day = dateTime.day.toString().padLeft(2, '0');
             if (title.isNotEmpty && content.isNotEmpty) {
               //添加日志
-              logInstance.record(
-                  title, content, operator, '2022-06-08 15:00:00');
+              logInstance.record(title, content, operator, year + '_' + month + '_' + day);
             }
           },
         ),

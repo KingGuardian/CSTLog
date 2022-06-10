@@ -19,6 +19,16 @@ class RecordInfo {
     return RecordInfo(title, content, operatorName, date);
   }
 
+  //单个文件限制在2M以内
+  bool isSizeValid() {
+    //dart中是utf-16编码，中英文都占两个字节
+    double contentSize = (content.length * 2.0) / 1024.0;
+    double titleSize = (title.length * 2.0) / 1024.0;
+    double opertorSize = (operatorName.length * 2.0) / 1024.0;
+    double dateSize = (date.length * 2.0) / 1024.0;
+    return (contentSize + titleSize + opertorSize + dateSize) < 1024 * 2;
+  }
+
   String getWriteContent() {
     return _toJson();
   }

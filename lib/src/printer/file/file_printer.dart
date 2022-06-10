@@ -1,12 +1,11 @@
 import 'dart:io';
 
-import 'package:cstlog/src/core/config.dart';
 import 'package:cstlog/src/model/log_event.dart';
 import 'package:cstlog/src/model/log_info.dart';
 import 'package:cstlog/src/printer/file/file_config.dart';
+import 'package:cstlog/src/printer/file/size_strategy.dart';
 import 'package:cstlog/src/printer/printer.dart';
 import 'package:cstlog/src/utils/file_utils.dart';
-import 'package:path_provider/path_provider.dart';
 
 class FilePrinter implements Printer {
   final FilePrinterConfig _fileConfig;
@@ -45,6 +44,10 @@ class FilePrinter implements Printer {
   @override
   Future<String> record(RecordInfo recordInfo) async {
     String operatorErrorMessage = '';
+    if (!recordInfo.isSizeValid()) {
+      operatorErrorMessage = '文件内容过大';
+      return operatorErrorMessage;
+    }
     //单次写入大小暂时还没有限制，需要完善策略
     File? logFile = await _initFileByEvent(false, recordInfo: recordInfo);
     if (logFile == null) {
@@ -54,7 +57,8 @@ class FilePrinter implements Printer {
 
     try {
       //维修记录和日志不同，使用覆盖方式，因为要从文件内容中读取到存储的信息
-      FileUtil.instantce.writeContentTo(logFile, recordInfo.getWriteContent(), mode: FileMode.write);
+      FileUtil.instantce.writeContentTo(logFile, recordInfo.getWriteContent(),
+          mode: FileMode.write);
     } catch (error) {
       operatorErrorMessage = error.toString();
     }
@@ -96,6 +100,13 @@ class FilePrinter implements Printer {
       }
     }
     if (!recordFile.existsSync()) {
+      //创建新文件时，检查一下当前缓存空间状态
+      final sizeStrategy = FifoStrategy(_fileConfig, isLog);
+      final isNeedClear = await sizeStrategy.isNeedClearCache();
+      if (isNeedClear) {
+        await sizeStrategy.clearCache();
+      }
+      //先执行删除，再创建文件
       recordFile.createSync();
     }
     return recordFile;
@@ -110,7 +121,8 @@ class FilePrinter implements Printer {
   }
 
   Future<String?> _getTargetStoragePath(String folderName) async {
-    Directory? storageDirectory = await FileUtil.instantce.getDeviceStoragePath(_fileConfig.storageType);
+    Directory? storageDirectory =
+        await FileUtil.instantce.getDeviceStoragePath(_fileConfig.storageType);
     String? path = storageDirectory != null
         ? storageDirectory.path + Platform.pathSeparator + folderName
         : null;

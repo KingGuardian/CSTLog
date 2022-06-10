@@ -79,6 +79,7 @@ class FileUtil {
       List<String> nameList = name.split('.');
       if (nameList.isNotEmpty) {
         name = nameList.first;
+        name = Uri.decodeFull(name);
       }
     }
 
@@ -130,5 +131,20 @@ class FileUtil {
         break;
     }
     return storageDirectory;
+  }
+
+  ///获取指定目录下占用空间大小，单位K
+  Future<double> calculateSize(String path) async {
+    double size = 0;
+    Directory directory = Directory(path);
+    if (directory.existsSync()) {
+      List<FileSystemEntity> fileList = directory.listSync();
+      for (final entity in fileList) {
+        File file = File(entity.path);
+        //size单位是K
+        size += file.lengthSync() / 1024;
+      }
+    }
+    return size;
   }
 }
