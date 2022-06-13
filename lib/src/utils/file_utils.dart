@@ -127,6 +127,9 @@ class FileUtil {
           storageDirectory = await getApplicationDocumentsDirectory();
         }
         break;
+      case LogStorageType.applicationSupport:
+        storageDirectory = await getApplicationSupportDirectory();
+        break;
       default:
         break;
     }

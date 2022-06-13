@@ -37,8 +37,7 @@ class FifoStrategy implements CacheSizeStrategy {
         });
 
         int index = 0;
-        while (_curCacheSize > maxCacheSize - 50 && index < fileList.length) {
-          //删除到有50M的剩余空间，或者删到文件列表结束
+        while (_curCacheSize > maxCacheSize - 5 && index < fileList.length) {
           File file = fileList[index];
           double fileSize = file.lengthSync() / 1024;
           bool deleteSuccess = true;

@@ -1,4 +1,5 @@
 import 'package:cstlog/src/constant/constant.dart';
+import 'package:path_provider/path_provider.dart';
 
 class LogConfig {
   final String tag;
@@ -45,6 +46,7 @@ class LogConfigBuilder {
 }
 
 enum LogStorageType {
+  applicationSupport,
   externalDoucument,
   externalStorage,
 }
