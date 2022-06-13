@@ -112,9 +112,10 @@ class FileUtil {
   }
 
   Future<Directory?> getDeviceStoragePath(LogStorageType storageType) async {
-    Directory? storageDirectory = await getExternalStorageDirectory();
+    Directory? storageDirectory;
     switch (storageType) {
       case LogStorageType.externalDoucument:
+        storageDirectory = await getExternalStorageDirectory();
         String path = storageDirectory?.path ?? '';
         if (path.isNotEmpty) {
           final pathList = path.split('Android');
@@ -126,6 +127,9 @@ class FileUtil {
         } else {
           storageDirectory = await getApplicationDocumentsDirectory();
         }
+        break;
+      case LogStorageType.externalStorage:
+        storageDirectory = await getExternalStorageDirectory();
         break;
       case LogStorageType.applicationSupport:
         storageDirectory = await getApplicationSupportDirectory();
