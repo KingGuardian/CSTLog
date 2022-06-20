@@ -28,7 +28,7 @@ class FileUtil {
     Directory directory = Directory(path);
     if (directory.existsSync()) {
       List<LogFileInfo> logList =
-          directory.listSync().map((e) => _buildLogFile(e)).toList();
+      directory.listSync().map((e) => _buildLogFile(e)).toList();
       logList.sort((a, b) {
         return b.lastModifyDate.compareTo(a.lastModifyDate);
       });
@@ -41,7 +41,7 @@ class FileUtil {
     Directory directory = Directory(path);
     if (directory.existsSync()) {
       List<RecordInfo> recordList =
-          directory.listSync().map((e) => _buildRecordInfo(e)).toList();
+      directory.listSync().map((e) => _buildRecordInfo(e)).toList();
       recordList.sort((a, b) {
         return b.date.compareTo(a.date);
       });
@@ -130,6 +130,17 @@ class FileUtil {
         break;
       case LogStorageType.externalStorage:
         storageDirectory = await getExternalStorageDirectory();
+        String path = storageDirectory?.path ?? '';
+        if (path.isNotEmpty) {
+          final pathList = path.split('Android');
+          path = pathList[0] +
+              'Android' +
+              Platform.pathSeparator +
+              externalFolderName;
+          storageDirectory = Directory(path);
+        } else {
+          storageDirectory = await getApplicationDocumentsDirectory();
+        }
         break;
       case LogStorageType.applicationSupport:
         storageDirectory = await getApplicationSupportDirectory();

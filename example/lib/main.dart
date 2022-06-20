@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
     operatorController = TextEditingController(text: "维修记录操作人");
 
     LogConfig config = LogConfigBuilder()
-        .withLogStorageType(LogStorageType.externalDoucument)
+        .withLogStorageType(LogStorageType.externalStorage)
         .build();
     logInstance = Logger.init(config: config);
   }

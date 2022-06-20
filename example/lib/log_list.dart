@@ -18,7 +18,7 @@ class _LogListPageState extends State<LogListPage> {
   void initState() {
     super.initState();
 
-    LogConfig config = LogConfigBuilder().withLogStorageType(LogStorageType.externalDoucument).build();
+    LogConfig config = LogConfigBuilder().withLogStorageType(LogStorageType.externalStorage).build();
     logInstance = Logger.init(config: config);
 
     _loadLogs();
