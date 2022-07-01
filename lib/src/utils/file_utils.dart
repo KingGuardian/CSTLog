@@ -28,7 +28,6 @@ class FileUtil {
           file?.writeAsString(content, mode: FileMode.write);
         }
       }
-
     } catch (e) {
       print(e.toString());
     }
@@ -53,7 +52,20 @@ class FileUtil {
       List<RecordInfo> recordList =
           directory.listSync().map((e) => _buildRecordInfo(e)).toList();
       recordList.sort((a, b) {
-        return b.date.compareTo(a.date);
+        int compareResult = b.date.compareTo(a.date);
+        if (compareResult == 0) {
+          // 在同一天的维修记录，新添加的在前面
+          if (a.uri != null && b.uri != null) {
+            File fileA = File.fromUri(a.uri!);
+            File fileB = File.fromUri(b.uri!);
+            if (fileA.existsSync() && fileB.existsSync()) {
+              DateTime dateB = fileB.lastModifiedSync();
+              DateTime dateA = fileA.lastModifiedSync();
+              compareResult = -dateA.compareTo(dateB);
+            }
+          }
+        }
+        return compareResult;
       });
       return recordList;
     }
