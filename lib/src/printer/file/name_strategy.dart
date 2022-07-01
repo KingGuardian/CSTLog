@@ -10,7 +10,7 @@ abstract class FileNameStrategy {
 class DefaultFileNameStrategy implements FileNameStrategy {
   @override
   String generateLogFileName(LogEvent logInfo) {
-    //日志文件的命名规则
+    // 日志文件的命名规则
     return _getLevelDescription(logInfo) +
         '-' +
         _getDateTime() +
@@ -19,7 +19,8 @@ class DefaultFileNameStrategy implements FileNameStrategy {
 
   @override
   String generateRecordFileName(RecordInfo logInfo) {
-    String fileName = logInfo.title.isEmpty ? '维修记录' : logInfo.title;
+    // 维修记录文件名加入时间戳，允许同标题维修记录存在
+    String fileName = logInfo.title.isEmpty ? '维修记录' : logInfo.title + '_' + DateTime.now().millisecondsSinceEpoch .toString();
     fileName = Uri.encodeFull(fileName);
     return fileName + _getFileTail();
   }

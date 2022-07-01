@@ -30,11 +30,19 @@ class FilePrinter implements Printer {
     try {
       //打印时间戳
       String dateTime = getDateTime();
-      FileUtil.instantce
-          .writeContentTo(logFile, '--------  ' + dateTime + '  --------');
-      FileUtil.instantce.writeContentTo(logFile, message);
-      FileUtil.instantce.writeContentTo(logFile, errorMessage);
-      FileUtil.instantce.writeContentTo(logFile, traceMessage + '\n');
+
+      // 调整顺序，新写入的日志在文件前
+      String content = '--------  ' +
+          dateTime +
+          '  --------' +
+          '\n' +
+          message +
+          '\n' +
+          errorMessage +
+          '\n' +
+          traceMessage +
+          '\n';
+      FileUtil.instantce.writeContentTo(logFile, content, isAppend: false);
     } catch (error) {
       operatorErrorMessage = error.toString();
     }
