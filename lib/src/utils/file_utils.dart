@@ -39,7 +39,7 @@ class FileUtil {
       List<LogFileInfo> logList =
           directory.listSync().map((e) => _buildLogFile(e)).toList();
       logList.sort((a, b) {
-        return b.fileName.compareTo(a.fileName);;
+        return b.fileName.compareTo(a.fileName);
       });
       return logList;
     }
