@@ -3,6 +3,7 @@ import 'package:cstlog/src/loader/file/file_loader.dart';
 import 'package:cstlog/src/loader/file/file_loader_config.dart';
 import 'package:cstlog/src/printer/file/file_config.dart';
 import 'package:cstlog/src/printer/file/file_printer.dart';
+import 'package:cstlog/src/printer/file/name_strategy.dart';
 
 class DefaultFactory {
   static LogConfig buildDefaultLogConfig() {
@@ -15,6 +16,9 @@ class DefaultFactory {
         .withLogFolderName(logConfig.logFolderName)
         .withRecordFolderName(logConfig.recordFolderName)
         .logStorageType(logConfig.logStorageType)
+        .withNameStrategy(DefaultFileNameStrategy(
+          logConfig.fileExtensionName,
+        ))
         .build();
 
     return FilePrinter(config);

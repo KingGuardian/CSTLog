@@ -1,3 +1,4 @@
+import 'package:cstlog/src/constant/constant.dart';
 import 'package:cstlog/src/core/config.dart';
 import 'package:cstlog/src/loader/loader.dart';
 import 'package:cstlog/src/model/log_event.dart';
@@ -13,11 +14,14 @@ import 'package:cstlog/src/utils/default_factory.dart';
 class Logger {
   final Printer _printer;
   final LogLoader _loader;
+  LogConfig? _config;
   Operator? _operator;
 
   Logger.init({LogConfig? config})
       : _printer = DefaultFactory.buildDefaultPrinter(config),
-        _loader = DefaultFactory.buildDefaultLogLoader(config);
+        _loader = DefaultFactory.buildDefaultLogLoader(config) {
+    _config = config;
+  }
 
   /// 记录维修日志
   Future<String> record(
@@ -43,7 +47,8 @@ class Logger {
 
   /// 导出开发日志到路径
   Future<String> exportLogs(String path, List<LogFileInfo> logList) async {
-    _operator ??= FileOperator();
+    _operator ??=
+        FileOperator(_config?.fileExtensionName ?? defaultFileExtensionName);
     String errorMessage =
         await _operator?.exportDevelopLogTo(path, logList) ?? '';
     return errorMessage;
@@ -51,7 +56,8 @@ class Logger {
 
   /// 导出维修日志到路径
   Future<String> exportRecords(String path, List<RecordInfo> recordList) async {
-    _operator ??= FileOperator();
+    _operator ??=
+        FileOperator(_config?.fileExtensionName ?? defaultFileExtensionName);
     String errorMessage =
         await _operator?.exportRecordTo(path, recordList) ?? '';
     return errorMessage;

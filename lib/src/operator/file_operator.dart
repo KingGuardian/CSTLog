@@ -2,11 +2,12 @@ import 'dart:io';
 
 import 'package:cstlog/cstlog.dart';
 import 'package:cstlog/src/constant/constant.dart';
-import 'package:cstlog/src/loader/loader.dart';
 import 'package:cstlog/src/operator/operator.dart';
 
 class FileOperator implements Operator {
-  FileOperator();
+  final String fileExtensionName;
+
+  FileOperator(this.fileExtensionName);
 
   @override
   Future<String> exportDevelopLogTo(
@@ -25,7 +26,8 @@ class FileOperator implements Operator {
         await file.copy(newLogPath +
             Platform.pathSeparator +
             logFileInfo.fileName +
-            '.log');
+            '.' +
+            fileExtensionName);
       }
     } catch (error) {
       errorMessage = error.toString();
@@ -52,8 +54,11 @@ class FileOperator implements Operator {
         if (uri != null) {
           File file = File.fromUri(uri);
           String fileName = recordInfo.fileName ?? recordInfo.title;
-          await file
-              .copy(newRecordPath + Platform.pathSeparator + fileName + '.log');
+          await file.copy(newRecordPath +
+              Platform.pathSeparator +
+              fileName +
+              '.' +
+              fileExtensionName);
         }
       }
     } catch (error) {

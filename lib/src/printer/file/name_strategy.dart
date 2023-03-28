@@ -8,6 +8,10 @@ abstract class FileNameStrategy {
 }
 
 class DefaultFileNameStrategy implements FileNameStrategy {
+  final String fileExtensionName;
+
+  DefaultFileNameStrategy(this.fileExtensionName);
+
   @override
   String generateLogFileName(LogEvent logInfo) {
     // 日志文件的命名规则
@@ -20,7 +24,11 @@ class DefaultFileNameStrategy implements FileNameStrategy {
   @override
   String generateRecordFileName(RecordInfo logInfo) {
     // 维修记录文件名加入时间戳，允许同标题维修记录存在
-    String fileName = logInfo.title.isEmpty ? '维修记录' : logInfo.title + '_' + DateTime.now().millisecondsSinceEpoch .toString();
+    String fileName = logInfo.title.isEmpty
+        ? '维修记录'
+        : logInfo.title +
+            '_' +
+            DateTime.now().millisecondsSinceEpoch.toString();
     fileName = Uri.encodeFull(fileName);
     return fileName + _getFileTail();
   }
@@ -55,6 +63,6 @@ class DefaultFileNameStrategy implements FileNameStrategy {
   }
 
   String _getFileTail() {
-    return '.log';
+    return '.' + fileExtensionName;
   }
 }

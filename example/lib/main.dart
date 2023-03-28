@@ -62,6 +62,7 @@ class _HomePageState extends State<HomePage> {
 
     LogConfig config = LogConfigBuilder()
         .withLogStorageType(LogStorageType.externalStorage)
+        .withFileExtensionName('ext')
         .build();
     logInstance = Logger.init(config: config);
   }
@@ -109,7 +110,8 @@ class _HomePageState extends State<HomePage> {
             String day = dateTime.day.toString().padLeft(2, '0');
             if (title.isNotEmpty && content.isNotEmpty) {
               //添加日志
-              logInstance.record(title, content, operator, year + '_' + month + '_' + day);
+              logInstance.record(
+                  title, content, operator, year + '_' + month + '_' + day);
             }
           },
         ),

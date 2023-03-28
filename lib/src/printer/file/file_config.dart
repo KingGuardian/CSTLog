@@ -21,7 +21,9 @@ class FilePrinterConfig {
 class FilePrinterConfigBuilder {
   String logFolderName = additelLogFolderName;
   String recordFolderName = additelRecordFolderName;
-  FileNameStrategy fileNameStrategy = DefaultFileNameStrategy();
+  FileNameStrategy fileNameStrategy = DefaultFileNameStrategy(
+    defaultFileExtensionName,
+  );
   FileSplitStrategy fileSplitStrategy = FixedSizeStrategy(maxSingleFileSize);
   LogStorageType storageType = LogStorageType.externalStorage;
 
@@ -35,7 +37,7 @@ class FilePrinterConfigBuilder {
     return this;
   }
 
-  FilePrinterConfigBuilder nameStrategy(FileNameStrategy nameStrategy) {
+  FilePrinterConfigBuilder withNameStrategy(FileNameStrategy nameStrategy) {
     fileNameStrategy = nameStrategy;
     return this;
   }
