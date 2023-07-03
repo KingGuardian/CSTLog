@@ -11,8 +11,12 @@ class FileUtil {
 
   FileUtil._();
 
-  Future<void> writeContentTo(File? file, String content,
-      {FileMode mode = FileMode.append, bool isAppend = true}) async {
+  Future<void> writeContentTo(
+    File? file,
+    String content, {
+    FileMode mode = FileMode.append,
+    bool isAppend = true,
+  }) async {
     if (content.isEmpty) {
       return;
     }

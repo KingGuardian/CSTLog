@@ -69,8 +69,11 @@ class FilePrinter implements Printer {
 
     try {
       //维修记录和日志不同，使用覆盖方式，因为要从文件内容中读取到存储的信息
-      FileUtil.instantce.writeContentTo(logFile, recordInfo.getWriteContent(),
-          mode: FileMode.write);
+      await FileUtil.instantce.writeContentTo(
+        logFile,
+        recordInfo.getWriteContent(),
+        mode: FileMode.write,
+      );
     } catch (error) {
       operatorErrorMessage = error.toString();
     }
