@@ -42,7 +42,11 @@ class FilePrinter implements Printer {
           '\n' +
           traceMessage +
           '\n';
-      FileUtil.instantce.writeContentTo(logFile, content, isAppend: false);
+      await FileUtil.instantce.writeContentTo(
+        logFile,
+        content,
+        isAppend: false,
+      );
     } catch (error) {
       operatorErrorMessage = error.toString();
     }
