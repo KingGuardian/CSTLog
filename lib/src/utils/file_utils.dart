@@ -11,7 +11,7 @@ class FileUtil {
 
   FileUtil._();
 
-  void writeContentTo(File? file, String content,
+  Future<void> writeContentTo(File? file, String content,
       {FileMode mode = FileMode.append, bool isAppend = true}) async {
     if (content.isEmpty) {
       return;
@@ -19,13 +19,13 @@ class FileUtil {
     try {
       if (isAppend) {
         // 按顺序写入文件尾部
-        file?.writeAsStringSync(content + '\n', mode: mode);
+        await file?.writeAsString(content + '\n', mode: mode);
       } else {
         // 先读取文件内容，新增内容+原内容
         String? fileContent = await file?.readAsString();
         if (fileContent != null) {
           content = content + '\n' + fileContent;
-          file?.writeAsString(content, mode: FileMode.write);
+          await file?.writeAsString(content, mode: FileMode.write);
         }
       }
     } catch (e) {

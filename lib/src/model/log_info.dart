@@ -13,9 +13,10 @@ class RecordInfo {
   factory RecordInfo.frromJson(String jsonContent) {
     final Map<String, dynamic> data = json.decode(jsonContent);
     String title = data.containsKey('title') ? data['title'] : '';
-    String operatorName = data.containsKey('operatorName') ? data['operatorName'] : '';;
-    String content = data.containsKey('content') ? data['content'] : '';;
-    String date = data.containsKey('date') ? data['date'] : '';;
+    String operatorName =
+        data.containsKey('operatorName') ? data['operatorName'] : '';
+    String content = data.containsKey('content') ? data['content'] : '';
+    String date = data.containsKey('date') ? data['date'] : '';
     return RecordInfo(title, content, operatorName, date);
   }
 

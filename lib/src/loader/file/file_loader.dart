@@ -29,11 +29,11 @@ class FileLogLoader implements LogLoader {
     return FileUtil.instantce.getAllSubFile(logPath);
   }
 
-  Future<String?> _getLogStoragePath() async {
+  Future<String?> _getLogStoragePath() {
     return _getTargetStoragePath(_loaderConfig.logFolderName);
   }
 
-  Future<String?> _getRecordStoragePath() async {
+  Future<String?> _getRecordStoragePath() {
     return _getTargetStoragePath(_loaderConfig.recordFolderName);
   }
 
