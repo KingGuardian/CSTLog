@@ -45,7 +45,7 @@ class FilePrinter implements Printer {
       await FileUtil.instantce.writeContentTo(
         logFile,
         content,
-        isAppend: false,
+        isAppend: true,
       );
     } catch (error) {
       operatorErrorMessage = error.toString();

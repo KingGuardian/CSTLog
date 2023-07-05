@@ -40,8 +40,11 @@ class FileUtil {
   List<LogFileInfo> getAllSubFile(String path) {
     Directory directory = Directory(path);
     if (directory.existsSync()) {
-      List<LogFileInfo> logList =
-          directory.listSync().map((e) => _buildLogFile(e)).toList();
+      List<LogFileInfo> logList = directory
+          .listSync()
+          .whereType<File>()
+          .map((e) => _buildLogFile(e))
+          .toList();
       logList.sort((a, b) {
         return b.fileName.compareTo(a.fileName);
       });
@@ -181,9 +184,10 @@ class FileUtil {
     if (directory.existsSync()) {
       List<FileSystemEntity> fileList = directory.listSync();
       for (final entity in fileList) {
-        File file = File(entity.path);
-        //size单位是K
-        size += file.lengthSync() / 1024;
+        if (entity is File) {
+          //size单位是K
+          size += entity.lengthSync() / 1024;
+        }
       }
     }
     return size;
