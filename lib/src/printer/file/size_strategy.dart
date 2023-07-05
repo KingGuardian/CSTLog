@@ -37,7 +37,8 @@ class FifoStrategy implements CacheSizeStrategy {
         });
 
         int index = 0;
-        while (_curCacheSize > maxCacheSize - 5 && index < fileList.length) {
+        while (_curCacheSize > maxCacheSize - 1024 * 1024 &&
+            index < fileList.length) {
           File file = fileList[index];
           double fileSize = file.lengthSync() / 1024;
           bool deleteSuccess = true;
