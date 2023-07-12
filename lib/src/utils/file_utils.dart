@@ -23,13 +23,21 @@ class FileUtil {
     try {
       if (isAppend) {
         // 按顺序写入文件尾部
-        await file?.writeAsString(content + '\n', mode: mode);
+        await file?.writeAsString(
+          content + '\n',
+          mode: mode,
+          flush: true,
+        );
       } else {
         // 先读取文件内容，新增内容+原内容
         String? fileContent = await file?.readAsString();
         if (fileContent != null) {
           content = content + '\n' + fileContent;
-          await file?.writeAsString(content, mode: FileMode.write);
+          await file?.writeAsString(
+            content,
+            mode: FileMode.write,
+            flush: true,
+          );
         }
       }
     } catch (e) {
